@@ -1,72 +1,141 @@
-# Experiment 1: Entity-Relationship (ER) Diagram
+## Experiment 1: Entity-Relationship (ER) Diagram
 
-## 🎯 Objective:
+### 🎯 Objective:
 To understand and apply the concepts of ER modeling by creating an ER diagram for a real-world application.
 
-## 📚 Purpose:
-The purpose of this workshop is to gain hands-on experience in designing ER diagrams that visually represent the structure of a database including entities, relationships, attributes, and constraints.
+---
+
+### 📚 Purpose:
+Gain hands-on experience in designing ER diagrams that visually represent the structure of a database including entities, relationships, attributes, and constraints.
 
 ---
 
-## 🧪 Choose One Scenario:
+## 🧪 Chosen Scenario: Hospital Database
 
-### 🔹 Scenario 1: University Database
-Design a database to manage students, instructors, programs, courses, and student enrollments. Include prerequisites for courses.
-
-**User Requirements:**
-- Academic programs grouped under departments.
-- Students have admission number, name, DOB, contact info.
-- Instructors with staff number, contact info, etc.
-- Courses have number, name, credits.
-- Track course enrollments by students and enrollment date.
-- Add support for prerequisites (some courses require others).
-
----
-
-### 🔹 Scenario 2: Hospital Database
 Design a database for patient management, appointments, medical records, and billing.
-
-**User Requirements:**
-- Patient details including contact and insurance.
-- Doctors and their departments, contact info, specialization.
-- Appointments with reason, time, patient-doctor link.
-- Medical records with treatments, diagnosis, test results.
-- Billing and payment details for each appointment.
 
 ---
 
 ## 📝 Tasks:
 1. Identify entities, relationships, and attributes.
-2. Draw the ER diagram using any tool (draw.io, dbdiagram.io, hand-drawn and scanned).
+2. Draw the ER diagram.
 3. Include:
    - Cardinality & participation constraints
-   - Prerequisites for University OR Billing for Hospital
+   - Billing and payment model
 4. Explain:
-   - Why you chose the entities and relationships.
-   - How you modeled prerequisites or billing.
+   - Why entities and relationships were chosen.
+   - How billing and payment are modeled.
 
-# ER Diagram Submission - Student Name
+---
 
-## Scenario Chosen:
-University / Hospital (choose one)
+## 👤 Student Name: Charankumar R
 
-## ER Diagram:
-![ER Diagram](er_diagram.png)
+## Scenario Chosen: Hospital
 
-## Entities and Attributes:
-- Entity1: Attributes
-- Entity2: Attributes
-...
+## 🗂 ER Diagram:
+![image](https://github.com/user-attachments/assets/a3580682-8b5d-4140-adf9-baef17e10952)
+---
 
-## Relationships and Constraints:
-- Relationship1 (Cardinality, Participation)
-- Relationship2 (Cardinality, Participation)
-...
+## 🧾 Entities and Attributes
 
-## Extension (Prerequisite / Billing):
-- Explain how you modeled prerequisites or billing.
+### 🏥 Patient
+- `PatientID` (PK)
+- `Name`
+- `DateOfBirth`
+- `InsuranceDetails`
 
-## Design Choices:
-Brief explanation of why you chose certain entities, relationships, and assumptions
+### 🧑‍⚕️ Doctor
+- `DoctorID` (PK)
+- `Name`
+- `Specialization`
 
-## RESULT
+### 🏢 Department
+- `DepartmentID` (PK)
+- `DepartmentName`
+- `DepartmentHead`
+
+### 📅 Appointment
+- `AppointmentID` (PK)
+- `ReasonForVisit`
+- `DateTime`
+- `PatientID` (FK)
+- `DoctorID` (FK)
+
+### 📋 MedicalRecord
+- `RecordID` (PK)
+- `Diagnosis`
+- `PrescribedMedications`
+- `TestResults`
+- `AppointmentID` (FK)
+
+### 💳 Billing
+- `BillingID` (PK)
+- `AppointmentID` (FK)
+- `TotalAmount`
+- `BillingStatus`
+
+### 💰 Payment
+- `PaymentID` (PK)
+- `BillingID` (FK)
+- `AmountPaid`
+- `PaymentDate`
+- `PaymentMode`
+
+---
+
+## 🔁 Relationships and Constraints
+
+### Relationships:
+- `Patient` ⟷ `Doctor` via `Appointment` (Many-to-Many)
+- `Doctor` ⟶ `Department` (Many-to-One)
+- `Appointment` ⟶ `MedicalRecord` (One-to-One)
+- `Appointment` ⟶ `Billing` (One-to-One)
+- `Billing` ⟶ `Payment` (One-to-Many)
+
+### Constraints:
+- Each appointment is between one patient and one doctor.
+- One bill per appointment.
+- A bill can have multiple payments (installments supported).
+
+---
+
+## 💳 Billing & Payment Design
+
+### Billing
+- Tracks total amount and payment status.
+- Tied directly to an appointment.
+
+### Payment
+- Handles actual transactions.
+- Allows partial or full payments with different methods (Cash, Card, Online).
+
+---
+
+## 💡 Design Justifications
+
+### Entity Choices:
+- **Patient**: Core subject receiving care.
+- **Doctor**: Central to service delivery.
+- **Department**: Organizes doctors logically.
+- **Appointment**: Logs patient-doctor interaction.
+- **MedicalRecord**: Stores diagnosis and treatments.
+- **Billing**: Tracks financial accountability.
+- **Payment**: Enables transaction flexibility.
+
+### Relationship Design:
+- Complex relationships (e.g., Patient-Doctor) simplified via `Appointment`.
+- Separate billing and payment modules for modularity and scalability.
+- Medical data tied to appointments to maintain visit-specific records.
+
+---
+
+## 🔐 Key Assumptions
+- Appointments are mandatory for patient visits.
+- Each appointment generates one medical record and one bill.
+- Payments can be made in parts (installments supported).
+- Billing is done even if no charges (e.g., for record-keeping).
+
+---
+
+## ✅ RESULT
+Successfully designed an ER diagram for a hospital database covering patients, doctors, departments, appointments, medical records, billing, and payments to support real-world healthcare data management.
