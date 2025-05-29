@@ -1,242 +1,232 @@
-# Experiment 4: Aggregate Functions, Group By and Having Clause
+# Experiment 5: Subqueries and Views
 
 ## AIM
-To study and implement aggregate functions, GROUP BY, and HAVING clause with suitable examples.
+To study and implement subqueries and views.
 
 ## THEORY
 
-### Aggregate Functions
-These perform calculations on a set of values and return a single value.
+### Subqueries
+A subquery is a query inside another SQL query and is embedded in:
+- WHERE clause
+- HAVING clause
+- FROM clause
 
-- **MIN()** – Smallest value  
-- **MAX()** – Largest value  
-- **COUNT()** – Number of rows  
-- **SUM()** – Total of values  
-- **AVG()** – Average of values
+**Types:**
+- **Single-row subquery**:
+  Sub queries can also return more than one value. Such results should be made use along with the operators in and any.
+- **Multiple-row subquery**:
+  Here more than one subquery is used. These multiple sub queries are combined by means of ‘and’ & ‘or’ keywords.
+- **Correlated subquery**:
+  A subquery is evaluated once for the entire parent statement whereas a correlated Sub query is evaluated once per row processed by the parent statement.
 
-**Syntax:**
+**Example:**
 ```sql
-SELECT AGG_FUNC(column_name) FROM table_name WHERE condition;
+SELECT * FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
 ```
-### GROUP BY
-Groups records with the same values in specified columns.
-**Syntax:**
+### Views
+A view is a virtual table based on the result of an SQL SELECT query.
+**Create View:**
 ```sql
-SELECT column_name, AGG_FUNC(column_name)
-FROM table_name
-GROUP BY column_name;
+CREATE VIEW view_name AS
+SELECT column1, column2 FROM table_name WHERE condition;
 ```
-### HAVING
-Filters the grouped records based on aggregate conditions.
-**Syntax:**
+**Drop View:**
 ```sql
-SELECT column_name, AGG_FUNC(column_name)
-FROM table_name
-GROUP BY column_name
-HAVING condition;
+DROP VIEW view_name;
 ```
 
 **Question 1**
 --
-How many patients have insurance coverage valid in each year?
+Write a SQL query to Retrieve the medications with dosages equal to the lowest dosage
 
-Sample table:Insurance Table
+Table Name: Medications (attributes: medication_id, medication_name, dosage)
 
-![image](https://github.com/user-attachments/assets/a3c1b350-c27d-4a4e-b58c-5bfeac0ee015)
+![WhatsApp Image 2025-04-30 at 17 37 35_34b13d27](https://github.com/user-attachments/assets/2c0cd8ed-ab19-4d21-aff8-b3f041699ebc)
 
-Query :
+
 ```sql
-SELECT strftime('%Y',ValidityPeriod) AS "ValidityYear",COUNT(PatientID) AS "TotalPatients"
-FROM Insurance
-GROUP BY ValidityPeriod;
+SELECT medication_id as medic,medication_name,dosage
+FROM Medications
+WHERE dosage = (SELECT MIN(dosage) FROM Medications);
 ```
 
 **Output:**
 
-![image](https://github.com/user-attachments/assets/8946fbc9-9b25-4b6c-afd5-4fcfd7a4b8f2)
-
+![WhatsApp Image 2025-04-30 at 17 38 19_fe7a24c2](https://github.com/user-attachments/assets/85ed8ba0-f6eb-4969-84b1-7e07aa3c9f9c)
 
 **Question 2**
 ---
-What is the average dosage prescribed for each medication?
+Write a SQL query that retrieves the all the columns from the Table Grades, where the grade is equal to the minimum grade achieved in each subject.
 
-Sample table : Prescriptions Table
+Sample table: GRADES (attributes: student_id, student_name, subject, grade)
 
-![image](https://github.com/user-attachments/assets/46071368-20c3-4420-b379-685c8e30bebd)
+![WhatsApp Image 2025-04-30 at 17 38 56_490cb70e](https://github.com/user-attachments/assets/9d7bad80-9141-496a-a9e7-786c28be1322)
 
-Query :
 ```sql
-SELECT Medication,Avg(Dosage) AS "AvgDosage"
-FROM Prescriptions
-GROUP BY Medication;
+SELECT * FROM GRADES g
+WHERE grade = (SELECT MIN(grade) FROM GRADES
+WHERE subject = g.subject);
 ```
 
 **Output:**
 
-![image](https://github.com/user-attachments/assets/284b2375-0ce4-4095-8884-1944ef6fbbc5)
+![WhatsApp Image 2025-04-30 at 17 39 50_59f05199](https://github.com/user-attachments/assets/5f0a6ee9-d25f-4205-b50a-e6178fff18e3)
 
 
 **Question 3**
 ---
-What is the total number of medications prescribed for each patient?
+Write a SQL query to retrieve all columns from the CUSTOMERS table for customers whose Address as Delhi
 
-Sample table : Prescriptions Table
+Sample table: CUSTOMERS
 
-![image](https://github.com/user-attachments/assets/97f724ad-71d4-459b-a4de-35d5f57c5ff2)
+![WhatsApp Image 2025-04-30 at 17 40 31_75777eb1](https://github.com/user-attachments/assets/41cef261-c1b1-4719-8a47-7f6a4fb1f5ad)
 
-Query :
 ```sql
-SELECT PatientID,COUNT(Medication) AS "TotalMedications"
-FROM Prescriptions
-GROUP BY PatientID;
+SELECT * FROM CUSTOMERS
+WHERE ADDRESS = 'Delhi';
 ```
 
 **Output:**
 
-![image](https://github.com/user-attachments/assets/cb100246-21c8-4939-949a-e5ba6f77ea96)
+![WhatsApp Image 2025-04-30 at 17 41 14_297d57f2](https://github.com/user-attachments/assets/28ebf385-8d8f-4806-b818-42d79f759514)
 
 
 **Question 4**
 ---
-Write a SQL query to Calculate the average income of the employees with names starting with 'A': 
+Write a SQL query to Find employees who have an age less than the average age of employees with incomes over 2.5 Lakh
 
-Table: employee
+Employee Table
 
-![image](https://github.com/user-attachments/assets/1aaf76f2-374c-4a19-9da9-a62949f1ade4)
+![WhatsApp Image 2025-04-30 at 17 42 04_6a6d6f08](https://github.com/user-attachments/assets/f5cf7d7b-f9d3-43f3-b7f4-8d0c2d811cfd)
 
-Query :
+
 ```sql
-SELECT AVG(income) AS avg_income
-FROM employee
-WHERE name LIKE 'A%';
+SELECT id,name,age,city,income
+FROM Employee
+WHERE age < (SELECT AVG(age) FROM Employee
+WHERE income > 250000);
 ```
 
 **Output:**
 
-![image](https://github.com/user-attachments/assets/75580b3d-c969-4d37-914d-2d0f08dd2546)
+![WhatsApp Image 2025-04-30 at 17 43 11_325f3c9b](https://github.com/user-attachments/assets/e32b9680-42cd-4984-89af-9952baa2c8fa)
 
 
 **Question 5**
 ---
-Write a SQL query to find What is the age difference between the youngest and oldest employee in the company.
+From the following tables write a SQL query to find salespeople who had more than one customer. Return salesman_id and name.
 
-Table: employee
+![WhatsApp Image 2025-04-30 at 17 44 03_30375ec8](https://github.com/user-attachments/assets/4b3124c2-8861-4689-b53f-5e96b937bcba)
 
-![image](https://github.com/user-attachments/assets/615ebbba-1883-46be-8740-8756d2a140d2)
-
-Query :
 ```sql
-SELECT MAX(AGE)-MIN(AGE) AS "age_difference"
-FROM employee;
+SELECT s.salesman_id,s.name
+FROM salesman s
+JOIN (
+    SELECT salesman_id
+    FROM customer
+    GROUP BY salesman_id
+    HAVING COUNT(*) > 1
+) c ON s.salesman_id = c.salesman_id;
 ```
 
 **Output:**
 
-![image](https://github.com/user-attachments/assets/646dbd3d-24bb-4cfd-8acd-7f07021eb413)
-
+![WhatsApp Image 2025-04-30 at 17 44 54_07627dd0](https://github.com/user-attachments/assets/87ecc91d-97ec-4a42-963a-be55b18f685c)
 
 **Question 6**
 ---
-Write a SQL query that counts the number of unique salespeople. Return number of salespeople.
+Write a SQL query to Retrieve the medications with dosages equal to the highest dosage
 
-Sample table: orders
+Table Name: Medications (attributes: medication_id, medication_name, dosage)
 
-![image](https://github.com/user-attachments/assets/555375b3-b668-40a8-b231-5e549aecd2cc)
+![WhatsApp Image 2025-04-30 at 17 46 03_e4198f8f](https://github.com/user-attachments/assets/8c940491-44a5-4359-952d-be7663a60f37)
 
-Query :
+
 ```sql
-SELECT COUNT(DISTINCT salesman_id) AS "COUNT"
-FROM orders;
+SELECT medication_id as medic,medication_name,dosage
+FROM Medications
+WHERE dosage = (SELECT MAX(dosage) FROM Medications);
 ```
 
 **Output:**
 
-![image](https://github.com/user-attachments/assets/346f2b3a-e8a5-45cb-a8d0-65fddb2b7492)
+![image](https://github.com/user-attachments/assets/d5c346ad-f51a-4272-b30e-a46b9bd02884)
 
 
 **Question 7**
 ---
-Write a SQL query to find how many employees have an income greater than 50K?
+Write a SQL query to retrieve all columns from the CUSTOMERS table for customers whose salary is LESS than $2500.
 
-Table: employee
+![WhatsApp Image 2025-04-30 at 17 48 14_8d62ea07](https://github.com/user-attachments/assets/dd1106b7-3268-47d5-8fb0-7290487ae17c)
 
-![image](https://github.com/user-attachments/assets/06c4129e-153f-44d6-8666-0a177d96bfa5)
-
-Query :
 ```sql
-SELECT COUNT(id) AS "employees_count"
-FROM employee
-WHERE income > 50000;
+SELECT * FROM CUSTOMERS
+WHERE SALARY < 2500;
 ```
 
 **Output:**
 
-![image](https://github.com/user-attachments/assets/dcff847c-4a01-4765-9ea9-9094e73bb65e)
+![WhatsApp Image 2025-04-30 at 17 48 53_0ef94724](https://github.com/user-attachments/assets/1cd0813f-e14a-4cf5-afbd-3063f8d9bf97)
 
 **Question 8**
 ---
-Write the SQL query that accomplishes the grouping of data by joining date (jdate), calculates the minimum work hours for each date, and excludes dates where the minimum work hour is not less than 10.
+Write a SQL query that retrieve all the columns from the table "Grades", where the grade is equal to the maximum grade achieved in each subject.
 
-Sample table: employee1
+Sample table: GRADES (attributes: student_id, student_name, subject, grade)
 
-![image](https://github.com/user-attachments/assets/fd22bb7b-429c-45f4-9822-8958c9b609b3)
+![WhatsApp Image 2025-04-30 at 17 49 31_0089e124](https://github.com/user-attachments/assets/83ffd277-2ea8-49a7-bfa3-70ec9e483b0e)
 
-Query :
+
 ```sql
-SELECT jdate,MIN(workhour) AS "MIN(workhour)"
-FROM employee1
-GROUP BY jdate
-HAVING MIN(workhour) < 10;
+SELECT * FROM GRADES g
+WHERE grade=(SELECT MAX(grade) FROM GRADES
+WHERE subject = g.subject);
 ```
 
 **Output:**
 
-![image](https://github.com/user-attachments/assets/0b8a51a5-2b7d-434e-8bd7-865a76647410)
+![WhatsApp Image 2025-04-30 at 17 50 07_71054bbe](https://github.com/user-attachments/assets/880cb0d0-66c2-4d7e-91f2-60d05b60b20c)
+
 
 **Question 9**
 ---
-Write the SQL query that achieves the grouping of data by age, calculates the minimum income for each age group, and includes only those age groups where the minimum income is less than 400,000.
+Write a SQL query to retrieve all columns from the CUSTOMERS table for customers whose salary is greater than $4500.
 
-Sample table: employee
+Sample table: CUSTOMERS
 
-![image](https://github.com/user-attachments/assets/2fb804bf-6c7d-425f-a627-f87619a0e6a4)
+![WhatsApp Image 2025-04-30 at 17 50 48_19da913c](https://github.com/user-attachments/assets/a3a289c4-7f40-4eab-a9a7-68cf6b35c947)
 
-Query :
 ```sql
-SELECT age,MIN(income) AS "MIN(income)"
-FROM employee
-GROUP BY age
-Having MIN(income) < 400000;
+SELECT * FROM CUSTOMERS
+WHERE SALARY>4500;
 ```
 
 **Output:**
 
-
-![image](https://github.com/user-attachments/assets/7e631007-d5ba-482d-8493-2b7d8116fa5a)
+![WhatsApp Image 2025-04-30 at 17 51 27_ff2e37e2](https://github.com/user-attachments/assets/ba333a9c-4209-4198-9ae5-707b11a8ba23)
 
 
 **Question 10**
 ---
-Write the SQL query that achieves the grouping of data by occupation, calculates the minimum work hours for each occupation, and excludes occupations where the minimum work hour is not greater than 8.
+From the following tables, write a SQL query to find those salespeople who earned the maximum commission. Return ord_no, purch_amt, ord_date, and salesman_id.
 
-Sample table: employee1
+![WhatsApp Image 2025-04-30 at 17 51 58_ba6da75b](https://github.com/user-attachments/assets/7f5cb84c-53ac-4a1d-ae26-af51e6b45f53)
 
-
-![image](https://github.com/user-attachments/assets/49d16088-ec0f-4401-a1dc-2e252ae2259c)
-
-Query :
 ```sql
-SELECT occupation,MIN(workhour) AS "MIN(workhour)"
-FROM employee1
-GROUP BY occupation
-HAVING MIN(workhour)  > 8;
+SELECT o.ord_no, o.purch_amt, o.ord_date, o.salesman_id
+FROM orders o
+JOIN salesman s ON o.salesman_id = s.salesman_id
+WHERE s.commission = (
+    SELECT MAX(commission)
+    FROM salesman
+);
+
 ```
 
 **Output:**
 
-
-
-![image](https://github.com/user-attachments/assets/9e75389b-1def-472d-9aba-1a211bbe9b32)
+![image](https://github.com/user-attachments/assets/c63d8b67-b074-42b5-bc47-cd43e1b59b95)
 
 ## RESULT
-Thus, the SQL queries to implement aggregate functions, GROUP BY, and HAVING clause have been executed successfully.
+Thus, the SQL queries to implement subqueries and views have been executed successfully.
